@@ -17,7 +17,7 @@ def part_2(nums, target):
         for j in range(i + 1, len(nums)):
             total += nums[j]
             if total == target:
-                group = list(map(lambda x: nums[x], range(i, j + 1)))
+                group = nums[i:j]
                 return min(group) + max(group)
             elif total > target:
                 break
