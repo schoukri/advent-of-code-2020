@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, re, itertools, collections
-from more_itertools import exactly_n, first_true, locate
+import sys, re, collections
 
 class Decoder:
 

@@ -47,7 +47,7 @@ def evaluate(part: int, expression: str) -> int:
         if last != curr:
             curr = last
             continue
-        if re.match(final_re, curr):
+        if final_re.match(curr):
             return int(curr)
         break
 
