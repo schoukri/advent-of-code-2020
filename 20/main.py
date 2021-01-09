@@ -9,7 +9,7 @@ def reverse(value: str) -> str:
     return value[::-1]
 
 class Tile:
-    def __init__(self, lines: List[str], seen: dict):
+    def __init__(self, lines: List[str]):
         match = re.match(r'Tile (\d+):', lines[0])
         self.num = int(match.group(1))
         self.flipped = False
@@ -18,39 +18,29 @@ class Tile:
         right = ''.join([line[-1] for line in lines[1:]])
         bottom = reverse(lines[-1])
         left = reverse(''.join([line[0] for line in lines[1:]]))
-        self.sides = []
-        for side in [top, right, bottom, left]:
-            if side in seen:
-                self.sides.append(seen[side])
-            elif reverse(side) in seen:
-                self.sides.append(-1 * seen[reverse(side)])
-            else:
-                seen[side] = len(seen) + 1
-                self.sides.append(seen[side])
+        self.sides = [top, right, bottom, left]
     def __repr__(self):
         return f'Num={self.num}, sides={self.sides}, rotation={self.rotation}, flipped={self.flipped}'
-    def top(self) -> int:
+    def top(self) -> str:
         side = self.sides[0 - self.rotation]
-        return side * -1 if self.flipped else side
-    def right(self) -> int:
+        return reverse(side) if self.flipped else side
+    def right(self) -> str:
         if self.flipped:
-            return self.sides[3 - self.rotation] * -1
+            return reverse(self.sides[3 - self.rotation])
         else:
             return self.sides[1 - self.rotation]
-    def bottom(self) -> int:
+    def bottom(self) -> str:
         side = self.sides[2 - self.rotation]
-        return side * -1 if self.flipped else side
-    def left(self) -> int:
+        return reverse(side) if self.flipped else side
+    def left(self) -> str:
         if self.flipped:
-            return self.sides[1 - self.rotation] * -1
+            return reverse(self.sides[1 - self.rotation])
         else:
             return self.sides[3 - self.rotation]
     def is_valid(self, above_tile: Optional[Tile], left_tile: Optional[Tile]) -> bool:
-        if above_tile != None:
-            if above_tile.bottom() != (-1 * self.top()):
+        if above_tile != None and self.top() != reverse(above_tile.bottom()):
                 return False
-        if left_tile != None:
-            if left_tile.right() != (-1 * self.left()):
+        if left_tile != None and self.left() != reverse(left_tile.right()):
                 return False
         return True
 
@@ -83,11 +73,9 @@ class Grid:
 
 class TileSet:
     def __init__(self, lines: List[str]):
-        seen = dict()
         self.tiles = []
         for block in split_at(lines, lambda x: x == ''):
-            tile = Tile(block, seen)
-            self.tiles.append(tile)
+            self.tiles.append(Tile(block))
         self.size = int(len(self.tiles) ** 0.5)
     def process(self, grid: Grid):
         # find the coords of the first available spot in the grid
